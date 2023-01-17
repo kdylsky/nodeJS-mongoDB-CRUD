@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Product</title>
+</head>
+<body>
+    <h1>New Product</h1>
+    <form action="/products" method="POST">
+        <label for="name">Product Name</label>
+        <input type="text" name="name" placeholder="product name", id="name">
+        <label for="price">Product Price</label>
+        <input type="number" name="price" placeholder="product price" id="price">
+        
+        <label for="category">Select Category</label>
+        <select name="category" id="category">
+            <% for (let category of categories) { %> 
+                <option value="<%= category %>"><%= category %> </option>
+            <% } %> 
+        </select>
+        
+        <label for="onsale">select Onsale</label>
+        <select name="onSale" id="onsale">
+            <% for (let onSale of onSales) {%> 
+            <option value="<%= onSale %>"><%= onSale %> </option>
+            <% } %> 
+        </select>
+        <label for="qty">Product Qty</label>
+        <input type="number" name="qty" placeholder="product qty" id="qty">
+        <button>Submit</button>
+    </form>
+    <a href="/products">Back to All Product</a>
+</body>
+</html>
