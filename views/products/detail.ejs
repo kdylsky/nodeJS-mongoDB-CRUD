@@ -13,6 +13,7 @@
         <li>Qty      : <%= foundProduct.qty %> </li>
         <li>OnSale   : <%= foundProduct.onSale %> </li>
         <li>Category : <a href="/products?category=<%= foundProduct.category%>"><%= foundProduct.category %></a> </li>
+        <li>Farm Name: <a href="/farms/<%= foundProduct.farm._id %>"><%= foundProduct.farm.name %> </a></li>
     </ul>
     <a href="/products">Back to All Product</a>
     <a href="/products/<%= foundProduct._id %>/edit ">Edit Product</a>

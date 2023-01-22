@@ -36,6 +36,10 @@ function wrapAsync(fn){
     }
 }
 
+categories =["fruit","snack","drink","meat"]
+onSales = [true, false]
+
+
 
 // FARM ROUTE
 app.get("/farms", wrapAsync(async(req,res)=>{
@@ -49,7 +53,7 @@ app.get("/farms/new", (req,res)=>{
 
 app.get("/farms/:id", wrapAsync(async(req,res)=>{
     const { id } = req.params;
-    const farm = await Farm.findById(id)
+    const farm = await Farm.findById(id).populate("products");
     res.render("farms/detail", {farm})
 }))
 
@@ -61,15 +65,27 @@ app.post("/farms", wrapAsync(async(req,res)=>{
     res.redirect("/farms")
 }))
 
+app.get("/farms/:id/products/new", wrapAsync(async(req,res)=>{
+    const { id } = req.params;
+    const farm = await Farm.findById(id);
+    
+    res.render("products/new", { farm, categories, onSales })
+}))
 
+app.post("/farms/:id/products", wrapAsync(async(req,res)=>{
+    const {id} = req.params;
+    const farm = await Farm.findById(id);
+    const product = new Product(req.body);
+    farm.products.push(product);
+    product.farm = farm;
+    await farm.save();
+    await product.save();
+    res.redirect(`/farms/${id}`)
+}))
 
 
 
 // PRODUCT ROUTE
-categories =["fruit","snack","drink","meat"]
-onSales = [true, false]
-
-
 // 라우터를 위한 비동기 콜백의 패턴이다.
 // 비동기 라우터 핸들러에서 mongoose, DB의 연산자를 기다리는 일은 흔하다.
 app.get("/products", wrapAsync(async(req,res, next)=>{
@@ -113,7 +129,8 @@ app.post("/products", wrapAsync(async(req,res, next)=>{
 
 app.get("/products/:id", wrapAsync(async(req, res, next)=>{
     const { id } = req.params;
-    const foundProduct = await Product.findById(id);
+    const foundProduct = await Product.findById(id).populate("farm", "name");
+    console.log(foundProduct)
     // else가 아니기 때문에 return해주어야 한다.
     if (!foundProduct){
         throw new AppError("Not Item", 404);
