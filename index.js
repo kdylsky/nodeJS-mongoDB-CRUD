@@ -57,6 +57,21 @@ app.get("/farms/:id", wrapAsync(async(req,res)=>{
     res.render("farms/detail", {farm})
 }))
 
+// 농장을 삭제하면 농장에서 등록한 상품도 모두 제거 해야 할까?
+// 그점은 데이터를 어떻게 다룰까에 따라 달라지겠지만 우선은 모두 삭제된다는 가정하에 코드를 작성해보자!!
+app.delete("/farms/:id", wrapAsync(async(req,res)=>{
+    const { id } = req.params;
+    const farm = await Farm.findByIdAndDelete(id);
+    // 방법1
+    // 여기서 farm에 있는 상품 정보를 모두 삭제하는 방법이 있다.
+    // 데이터가 작을 경우는 가능하나 연결된 데이터가 상품이외에 많은 경우는 하나하나 하기에는 비효율적이다.
+    
+    // 방법2
+    // 많은 레퍼런스가 있는 경우는 mongoose의 미들웨어를 사용하는 것이다.
+    // 미들웨어는 models 파일에 정의해준다.
+    res.redirect("/farms")
+}))
+
 
 app.post("/farms", wrapAsync(async(req,res)=>{
     // 유효성검사가 필요하지만 여기서는 그냥 진행한다.
@@ -130,7 +145,6 @@ app.post("/products", wrapAsync(async(req,res, next)=>{
 app.get("/products/:id", wrapAsync(async(req, res, next)=>{
     const { id } = req.params;
     const foundProduct = await Product.findById(id).populate("farm", "name");
-    console.log(foundProduct)
     // else가 아니기 때문에 return해주어야 한다.
     if (!foundProduct){
         throw new AppError("Not Item", 404);
