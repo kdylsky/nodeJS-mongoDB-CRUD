@@ -3,6 +3,7 @@ const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
 const Product = require("./models/product");
+const Farm = require("./models/farm");
 const methodOverride = require("method-override");
 
 const AppError = require("./AppError");
@@ -24,10 +25,6 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.use(methodOverride("_method"));
 
-categories =["fruit","snack","drink","meat"]
-onSales = [true, false]
-
-
 // 비동기 콜백을 감싸는 함수를 만들어서 try..catch를 반복해서 사용하지 않게 한다.
 // 전체코드가 우리가 정의한 다른 함수로 전달되는 개념이다.
 // wrapAsync()에 전달되는 개념이다.
@@ -40,8 +37,37 @@ function wrapAsync(fn){
 }
 
 
+// FARM ROUTE
+app.get("/farms", wrapAsync(async(req,res)=>{
+    const farms = await Farm.find({});
+    res.render("farms/index",{ farms });
+}))
+
+app.get("/farms/new", (req,res)=>{
+    res.render("farms/new")
+})
+
+app.get("/farms/:id", wrapAsync(async(req,res)=>{
+    const { id } = req.params;
+    const farm = await Farm.findById(id)
+    res.render("farms/detail", {farm})
+}))
 
 
+app.post("/farms", wrapAsync(async(req,res)=>{
+    // 유효성검사가 필요하지만 여기서는 그냥 진행한다.
+    const farm = new Farm(req.body);
+    await farm.save();
+    res.redirect("/farms")
+}))
+
+
+
+
+
+// PRODUCT ROUTE
+categories =["fruit","snack","drink","meat"]
+onSales = [true, false]
 
 
 // 라우터를 위한 비동기 콜백의 패턴이다.

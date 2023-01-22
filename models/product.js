@@ -23,6 +23,10 @@ const productSchema = new mongoose.Schema({
         type:Number,
         default:1,
         min:0
+    },
+    farm:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Farm"
     }
 })
 const Product = mongoose.model("Product", productSchema);
